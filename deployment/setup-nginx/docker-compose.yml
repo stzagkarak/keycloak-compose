@@ -1,0 +1,13 @@
+version: "3.7"
+services:
+  nginx:
+    image: jonasal/nginx-certbot:${NGINX_CERTBOT_VERSION}
+    ports:
+      - "80:80"
+      - "443:443"
+    env_file:
+      - ./setup_config/nginx-certbot.env
+    restart: unless-stopped
+    volumes:
+      - ./../instance/nginx/:/etc/letsencrypt
+      - ./setup_config/user_conf.d:/etc/nginx/user_conf.d

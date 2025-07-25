@@ -1,40 +1,26 @@
 version: "3.7"
 services:
-
   # the keycloak service
   keycloak:
-    image: quay.io/keycloak/keycloak:${KC_VERSION}
+    image: keycloak/keycloak:${KC_VERSION}
     command: ["start"]
     ports:
       - "${KEYCLOAK_PORT}:8080"
     env_file:
       - ./config/keycloak.env
       - ./.env
+    #volumes: # mount local themes
+    #  - type: bind
+    #    source: ./instance/themes
+    #    target: /opt/keycloak/providers
     restart: unless-stopped
     depends_on:
       postgresd:
         condition: service_healthy
     networks:
       - intranet
-    
-  # Run a postgres instance with a persistant data volume.
-  postgresd:
-    image: postgres:${POSTGRES_VERSION}
-    healthcheck:
-      test: "exit 0"
-    ports:
-      - "5432:5432"
-    volumes:
-      - type: bind
-        source: ./instance/database
-        target: /var/lib/postgresql/data
-    env_file:
-      - ./config/postgres.env
-    restart: unless-stopped
-    networks:
-      - intranet
 
-  nginx: 
+  nginx:
     image: jonasal/nginx-certbot:${NGINX_CERTBOT_VERSION}
     ports:
       - "80:80"
@@ -50,13 +36,26 @@ services:
     networks:
       - intranet
 
+  # Run a postgres instance with a persistant data volume.
+  postgresd:
+    image: postgres:${POSTGRES_VERSION}
+    healthcheck:
+      test: "exit 0"
+    ports:
+      - "5432:5432"
+    volumes:
+      - database-data:/var/lib/postgresql/data
+    env_file:
+      - ./config/postgres.env
+    restart: unless-stopped
+    networks:
+      - intranet
+
   pgbackups:
-    image: prodrigestivill/postgres-backup-local:latest
+    image: prodrigestivill/postgres-backup-local:${DB_BACKUP_LOCAL_VERSION}
     restart: unless-stopped
     volumes:
-      - type: bind
-        source: ./instance/database/mbackups
-        target: /backups
+      - database-backups:/backups
     depends_on:
       postgresd:
         condition: service_healthy
@@ -64,6 +63,10 @@ services:
       - ./config/postgres-backup.env
     networks:
       - intranet
+
+volumes:
+  database-data:
+  database-backups:
 
 networks:
   intranet:
