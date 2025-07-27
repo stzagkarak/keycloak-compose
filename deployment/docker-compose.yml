@@ -29,6 +29,7 @@ services:
       - ./config/nginx-certbot.env
     restart: unless-stopped
     volumes:
+      # add :z if you have issues with permissions
       - ./instance/nginx/:/etc/letsencrypt
       - ./config/user_conf.d:/etc/nginx/user_conf.d
     depends_on:

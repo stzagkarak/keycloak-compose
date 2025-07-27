@@ -12,8 +12,32 @@ services:
     #    source: ./instance/theme
     #    target: /opt/keycloak/providers
     restart: unless-stopped
+    depends_on:
+      postgresd:
+        condition: service_healthy
     networks:
       - intranet
+
+  # Run a postgres instance with a persistant data volume.
+  postgresd:
+    image: postgres:${POSTGRES_VERSION}
+    healthcheck:
+      test: "exit 0"
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    env_file:
+      - ./postgres.env
+    restart: unless-stopped
+    networks:
+      - intranet
+
+# volumes are not removed when running docker compose down.
+# To remove them run docker compose down -v
+
+volumes:
+  db_data:
 
 networks:
   intranet:

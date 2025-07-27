@@ -24,8 +24,6 @@ docker-compose.x86_64           2.38.2-1.fc42       updates
 docker-compose-switch.x86_64    1.0.5-2.fc42        fedora
 ```
 
-> May need to modify scripts and docker compose files for your system.
-
 ### Deploy Locally
 
 1. Study and possibly change configuration files ( also check for hidden ones like that start with "." like ".env" ).
@@ -38,7 +36,9 @@ docker-compose-switch.x86_64    1.0.5-2.fc42        fedora
 
 Optionally you may provide a `-d` parameter to the script `./run_local.sh -d` to detach the service from the terminal window.
 
-The script spins up a keycloak server on `http://localhost:8080`. The default admin username and password is "admin_changeme".
+The script spins up a keycloak server on `http://localhost:8080` with a postgres database hooked for peristant data storage. This is so that you dont "lose" your configuration when stoping and restarting the containers. The default admin username and password is "admin_changeme".
+
+> If you have issues with file permissions, on the appropiate `docker-compose` add `:z` in bind volumes.
 
 ### Deploy in production
 
@@ -59,6 +59,8 @@ Prerequisites:
 1. Study and CHANGE values in the configuration files ( also check for hidden ones like that start with "." like ".env" ).
 
 2. `cd` into `deployment`. Run `docker compose up`. If all goes well, you may use "CTRL+C" to exit and stop the containers, then run `docker compose down` followed by `docker compose up -d` to re-run in detached mode.
+
+> If you have issues with file permissions, on the appropiate `docker-compose` add `:z` in bind volumes.
 
 The appoach followed spins up a keycloak server with a postgres database for data storage. The postgres database is backedup daily using `prodrigestivill/postgres-backup-local`. You can find the backups on the `database-backups` docker volume.
 
