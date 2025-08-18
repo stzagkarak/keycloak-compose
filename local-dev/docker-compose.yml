@@ -7,10 +7,8 @@ services:
       - "${KEYCLOAK_PORT}:8080"
     env_file:
       - ./keycloak.env
-    #volumes: # mount local themes
-    #  - type: bind
-    #    source: ./instance/theme
-    #    target: /opt/keycloak/providers
+    #volumes: # mount local themes ( -z if on fedora )
+    #  - ./instance/themes:/opt/keycloak/providers:z
     restart: unless-stopped
     depends_on:
       postgresd:

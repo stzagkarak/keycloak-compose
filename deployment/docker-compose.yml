@@ -9,10 +9,8 @@ services:
     env_file:
       - ./config/keycloak.env
       - ./.env
-    #volumes: # mount local themes
-    #  - type: bind
-    #    source: ./instance/themes
-    #    target: /opt/keycloak/providers
+    #volumes: # mount local themes ( -z if on fedora )
+    # - ./instance/themes:/opt/keycloak/providers:z
     restart: unless-stopped
     depends_on:
       postgresd:
